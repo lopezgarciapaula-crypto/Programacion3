@@ -1,3 +1,4 @@
+package Ejercicio1_6;
 public class Coche {
 
     String matricula;
