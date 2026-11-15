@@ -1,8 +1,11 @@
 package SEMANA8.modelo;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.nio.file.Path;
+
+// IMPORTAMOS LAS CLASES 
+import es.usal.progiii.tools.Rutas;
+import es.usal.progiii.tools.OpMat;
 
 public class QuinielaModel {
     private Quiniela quiniela;
@@ -17,29 +20,30 @@ public class QuinielaModel {
         quiniela.agregarPartido(new Partido(local, visitante));
     }
 
-    // V2: Carga desde fichero
+    // V2: Carga desde fichero usando la clase Rutas dadas
     public void cargarPartidosDesdeFichero() {
-        // Ruta relativa directa (más segura en VS Code)
-        String ruta = "SEMANA8/datos/equipos.txt";
-        File fichero = new File(ruta);
+        // 1. Usamos Rutas para obtener la ruta del Escritorio del usuario de forma automática
+        Path ruta = java.nio.file.Paths.get("SEMANA8/datos/equipos.txt");
+        File fichero = ruta.toFile();
 
-        try (Scanner sc = new Scanner(fichero)) {
-            while (sc.hasNextLine()) {
-                String linea = sc.nextLine().trim();
-                if (linea.isEmpty()) continue;
-
-                // Separamos por el guion
-                String[] partes = linea.split("-");
-                if (partes.length == 2) {
+        try {
+            // 2. Usamos OpMat para leer el fichero. 
+            // Le decimos que el separador entre equipos es el guion "-"
+            String[][] datos = OpMat.importFromDisk(fichero, "-");
+            
+            // 3. Recorremos los datos leídos y los guardamos en nuestra Quiniela
+            for (String[] fila : datos) {
+                if (fila.length == 2) {
                     quiniela.agregarPartido(
-                        new Partido(new Equipo(partes[0].trim()), new Equipo(partes[1].trim()))
+                        new Partido(new Equipo(fila[0].trim()), new Equipo(fila[1].trim()))
                     );
                 }
             }
             System.out.println("¡Partidos cargados correctamente desde el fichero!");
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: No se encontro el fichero en la ruta: " + ruta);
-            System.out.println("Asegurate de que el archivo existe en: SEMANA8/datos/equipos.txt");
+        } catch (Exception e) {
+            System.out.println("Aviso: No se pudo cargar el fichero de equipos.");
+            System.out.println("Ruta buscada: " + ruta);
+            System.out.println("Detalle del error: " + e.getMessage());
         }
     }
 
