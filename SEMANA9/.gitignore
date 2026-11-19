@@ -1,0 +1,10 @@
+*.class
+*.jar
+*.bin
+*.json
+*.xml
+*.csv
+out/
+bin/
+.idea/
+.vscode/
